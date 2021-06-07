@@ -1,0 +1,65 @@
+version: "3"
+
+# networks:
+#   default:
+#     external:
+#       name: external
+
+services:
+  bsc_mainnet:
+    build: 
+      context: .
+      args:
+        - bsc_branch=v1.1.0-beta
+    container_name: bsc_mainnet
+    hostname: bsc_mainnet
+    restart: unless-stopped
+    environment:
+      - NETWORK=mainnet
+    ports:
+      - "8575:8575"
+      - "8547:8547" # Websocket
+      - "8576:8576"
+      - "8577:8577"
+      - "30311:30311/udp"
+      - "30311:30311"
+    volumes:
+      - ./node/:/root/.ethereum/
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command:
+      - /bootstrap.sh
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
+
+  bsc_testnet:
+    build:
+      context: .
+      args:
+        - bsc_branch=v1.0.7-ht.3
+    container_name: bsc_testnet
+    hostname: bsc_testnet
+    restart: unless-stopped
+    environment:
+      - NETWORK=testnet
+    ports:
+      - "8585:8575"
+      - "8557:8547" # Websocket
+      - "8586:8576"
+      - "8587:8577"
+      - "30211:30311/udp"
+      - "30211:30311"
+    volumes:
+      - ./node-testnet/:/root/.ethereum/
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command:
+      - /bootstrap.sh
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
